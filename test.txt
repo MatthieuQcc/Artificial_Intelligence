@@ -1,0 +1,11 @@
+affiche_solution(S,Q) :-
+	print('Solution trouvee! \n'),
+	print(S),
+	affiche_parents(S,Q).
+
+%cherche les peres recursivement sur Q et les affiche
+affiche_parents(S,Q) :-
+	belongs([S, _, Pere, Mouv], Q),
+	print(Mouv),
+	print(Pere),
+	affiche_parents(Pere,Q).
