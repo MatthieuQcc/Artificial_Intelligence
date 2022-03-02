@@ -15,7 +15,7 @@ Rappels sur l'algorithme
    Pu est le meme ensemble mais ordonne lexicographiquement (selon la donnee de
    l'etat). Il permet de retrouver facilement n'importe quel etat pendant
 
-   On gere les 2 ensembles de fa�on synchronisee : chaque fois qu'on modifie
+   On gere les 2 ensembles de fa�on synchronisee : chaque fois qu'on modifie
    (ajout ou retrait d'un etat dans Pf) on fait la meme chose dans Pu.
 
    Q est l'ensemble des etats deja developpes. Comme Pu, il permet de retrouver
@@ -49,22 +49,51 @@ Predicat principal de l'algorithme :
 
 main :-
 	% initialisations Pf, Pu et Q 
+	initial_state(S0),
+	G0 is 0, 
+	heuristique(S0,H0),
+	F0 is H0 + G0,
 
+	%Creation des differents AVL
+	empty(Pf),
+	empty(Pu),
+	empty(Q),
+
+	%Insertion des differents noeuds
+	insert([[F0, H0, G0], S0], Pf),
+	insert([S0, [F0, H0, G0], nil, nil], Pu),
+	
 	% lancement de Aetoile
 
-	true.   %********
-			% A FAIRE
-			%********
-
-
+	aetoile(Pf,Pu,Q).
 
 %*******************************************************************************
+
+aetoile(nil,nil,_) :-
+	writeln('PAS de SOLUTION : L’ETAT FINAL N’EST PAS ATTEIGNABLE !').
+
+aetoile(Pf, Ps, Qs) :-
+	final_state(Fin),
+	suppress_min(Fin,Pf,_),
+	insert([Fin, _, nil, nil],Qs,Qn),
+	affiche_solution(Ps,Qn).
 
 aetoile(Pf, Ps, Qs) :-
 	true.   %********
 			% A FAIRE
-			%********
-	
+			%********	
+
+affiche_solution(S,Q) :-
+	print('Solution trouvee! \n'),
+	print(S),
+	affiche_parents(S,Q).
+
+%cherche les peres recursivement sur Q et les affiche
+affiche_parents(S,Q) :-
+	belongs([S, _, Pere, Mouv], Q),
+	print(Mouv),
+	print(Pere),
+	affiche_parents(Pere,Q).
 
 	
    
