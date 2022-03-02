@@ -1,16 +1,9 @@
 /* Fichier du probleme. 
-
 Doit contenir au moins 4 predicats qui seront utilises par A*
-
    etat_initial(I)                                         % definit l'etat initial
-
    etat_final(F)                                           % definit l'etat final  
-
    rule(Rule_Name, Rule_Cost, Before_State, After_State)   % règles applicables
-
    heuristique(Current_State, Hval)				           % calcul de l'heuristique 
-
-
 Les autres prédicats sont spécifiques au Taquin.
 */
 
@@ -45,7 +38,6 @@ initial_state([ [b, h, c],       % C'EST L'EXEMPLE PRIS EN COURS
 initial_state([ [ a, b, c],        
                 [ g, h, d],
                 [vide,f, e] ]). % h2=2, f*=2
-
 initial_state([ [b, c, d],
                 [a,vide,g],
                 [f, h, e]  ]). % h2=10 f*=10
@@ -57,7 +49,6 @@ initial_state([ [f, g, a],
 initial_state([ [e, f, g],
                 [d,vide,h],
                 [c, b, a]  ]). % h2=24, f*=30 
-
 initial_state([ [a, b, c],
                 [g,vide,d],
                 [h, f, e]]). % etat non connexe avec l'etat final (PAS DE SOLUTION)
@@ -203,9 +194,6 @@ heuristique(U,H) :-
 	% et les compte (voir prédicat length)
    
     heuristique1(U, H) :- findall(P, est_mal_place(P, U), L), length(L, H).
-									%********
-                                    % A FAIRE
-                                    %********
    
    
    %****************
@@ -216,9 +204,7 @@ heuristique(U,H) :-
    % entre sa position courante et sa positon dans l'etat final
 
    
-    heuristique2(U, H) :- true.     %********
-                                    % A FAIRE
-                                    %********
+    heuristique2(U, H) :- findall(V, dm(U,V), L), somme(L, H).
 	
 est_bien_place(P) :- initial_state(Grille), nth1(L,Grille,LigneIni), nth1(C,LigneIni,P), final_state(GrilleFin), nth1(L,GrilleFin,Ligne), nth1(C,Ligne,P).
 est_mal_place(P, Grille) :- 
@@ -240,4 +226,9 @@ dm(Mat, V) :-
     X is abs(L-Lf),
     Y is abs(C-Cf),
     V is X+Y.
-%findall sur ça puis somme
+
+somme([], 0).
+somme([H|T], S) :-
+    somme(T, S1),
+    S is H+S1.
+    
