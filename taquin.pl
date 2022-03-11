@@ -216,7 +216,8 @@ est_mal_place(P, Grille) :-
     nth1(C,Ligne,P2),
     P\=P2.
 
-next_moves(G) :- findall([M,N], rule(M,1,G,N), _).
+next_moves(G, L) :- findall([M,N], rule(M,1,G,N), L).
+
 
 dm(Mat, V) :- 
     coordonnees([L,C], Mat, P), 

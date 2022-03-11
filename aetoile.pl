@@ -84,19 +84,13 @@ aetoile(Pf, Pu, Qs) :-
 	%on enlève aussi le nœud frère associé dans Pu
 	suppress_min([U,[F,H,G],Pere, A],Pu,NewPu),
 	%développement de U
-	% déterminer tous les nœuds contenant un état successeur S de la situation U et calculer leur évaluation [Fs, Hs, Gs]
-	
+	exapnd(S, U, [Fs,Hs,Gs], G),
 	% traiter chaque nœud successeur
 
-		% si S est connu dans Q alors oublier cet état
-		% si S est connu dans Pu alors garder le terme associé à la meilleure évaluation 
-		% sinon (S est une situation nouvelle) il faut créer un nouveau terme à insérer dans Pu
-	
+
 	% U ayant été développé et supprimé de P, il reste à l’insérer le nœud [U,Val,...,..] dans Q
 
 	% Appeler récursivement aetoile avec les nouveaux ensembles Pf_new, Pu_new et Q_new
-
-
 
 
 affiche_solution(S,Q) :-
@@ -112,4 +106,33 @@ affiche_parents(S,Q) :-
 	affiche_parents(Pere,Q).
 
 	
-   
+expand(S, U, [Fs, Hs, Gs], Gu) :-
+	next_moves(U ,L),
+	% déterminer tous les nœuds contenant un état successeur S de la situation U et calculer leur évaluation [Fs, Hs, Gs]
+	list_member([_, S], L),
+	heuristique(S, Hs),
+	Gs is Gu + 1,
+	Fs is Gs + Hs.
+
+
+loop_successors(S, Q, Pf, Pu, New_Pf, New_Pu, U, Cout, A, New_Q) :-
+	% si S est connu dans Q alors oublier cet état
+	belongs([S,_,_,_], Q),
+	suppress([_,S], Pf, New_Pf),
+	suppress([S,_,_,_], Pu, New_Pu).
+
+loop_successors(S, Q, Pf, Pu, New_Pf, New_Pu, U, Cout, A, New_Q) :-
+	% si S est connu dans Pu alors garder le terme associé à la meilleure évaluation 
+	belongs([S,_,_,_], Pu),
+	suppress_min([_,S], Pf, New_Pf),
+	suppress([S,_,_,_], Pu, New_Pu).
+
+loop_successors(S, Q, Pf, Pu, New_Pf, New_Pu, U, Cout, A, New_Q) :-
+	% sinon (S est une situation nouvelle) il faut créer un nouveau terme à insérer dans Pu
+	insert([S,Cout,U,New_A], Pu, New_Pu),
+	insert([Cout, U], Pf, New_Pf),
+	insert([S,Cout,U,New_A], Q, New_Q),
+	New_A is A+1.
+
+list_member(X,[X|_]).
+list_member(X,[_|TAIL]) :- list_member(X,TAIL).
