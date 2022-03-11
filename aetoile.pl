@@ -72,17 +72,18 @@ main :-
 aetoile(nil,nil,_) :-
 	writeln('PAS de SOLUTION : L’ETAT FINAL N’EST PAS ATTEIGNABLE !').
 
-aetoile(Pf, Ps, Qs) :-
+aetoile(Pf, Pu, Qs) :-
 	final_state(Fin),
 	suppress_min(Fin,Pf,_),
 	insert([Fin, _, nil, nil],Qs,Qn),
-	affiche_solution(Ps,Qn).
+	affiche_solution(Pu,Qn).
 
-aetoile(Pf, Ps, Qs) :-
+aetoile(Pf, Pu, Qs) :-
 	% on enlève le nœud de Pf correspondant à l’état U à développer 
-
+	suppress_min([[F,H,G], U],Pf,NewPf),
+	%on enlève aussi le nœud frère associé dans Pu
+	suppress_min([U,[F,H,G],Pere, A],Pu,NewPu),
 	%développement de U
-
 	% déterminer tous les nœuds contenant un état successeur S de la situation U et calculer leur évaluation [Fs, Hs, Gs]
 	
 	% traiter chaque nœud successeur
