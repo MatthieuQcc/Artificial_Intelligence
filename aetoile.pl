@@ -45,7 +45,7 @@ Predicat principal de l'algorithme :
 :- ['avl.pl'].       % predicats pour gerer des arbres bin. de recherche   
 :- ['taquin.pl'].    % predicats definissant le systeme a etudier
 
-%*******************************************************************************
+%*******pendants*************************************************************
 
 main :-
 	% initialisations Pf, Pu et Q 
@@ -79,9 +79,24 @@ aetoile(Pf, Ps, Qs) :-
 	affiche_solution(Ps,Qn).
 
 aetoile(Pf, Ps, Qs) :-
-	true.   %********
-			% A FAIRE
-			%********	
+	% on enlève le nœud de Pf correspondant à l’état U à développer 
+
+	%développement de U
+
+	% déterminer tous les nœuds contenant un état successeur S de la situation U et calculer leur évaluation [Fs, Hs, Gs]
+	
+	% traiter chaque nœud successeur
+
+		% si S est connu dans Q alors oublier cet état
+		% si S est connu dans Pu alors garder le terme associé à la meilleure évaluation 
+		% sinon (S est une situation nouvelle) il faut créer un nouveau terme à insérer dans Pu
+	
+	% U ayant été développé et supprimé de P, il reste à l’insérer le nœud [U,Val,...,..] dans Q
+
+	% Appeler récursivement aetoile avec les nouveaux ensembles Pf_new, Pu_new et Q_new
+
+
+
 
 affiche_solution(S,Q) :-
 	print('Solution trouvee! \n'),
