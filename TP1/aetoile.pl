@@ -84,7 +84,7 @@ aetoile(Pf, Pu, Qs) :-
 	%on enlève aussi le nœud frère associé dans Pu
 	suppress_min([U,[F,H,G],Pere, A],Pu,NewPu),
 	%développement de U
-	exapnd(S, U, [Fs,Hs,Gs], G),
+	expand(S, U, [Fs,Hs,Gs], G),
 	% traiter chaque nœud successeur
 
 
@@ -121,11 +121,16 @@ loop_successors(S, Q, Pf, Pu, New_Pf, New_Pu, U, Cout, A, New_Q) :-
 	suppress([_,S], Pf, New_Pf),
 	suppress([S,_,_,_], Pu, New_Pu).
 
-loop_successors(S, Q, Pf, Pu, New_Pf, New_Pu, U, Cout, A, New_Q) :-
+loop_successors(S, Q, Pf, Pu, New_Pf, New_Pu, U, [Fs,_,_], A, New_Q) :-
 	% si S est connu dans Pu alors garder le terme associé à la meilleure évaluation 
-	belongs([S,_,_,_], Pu),
-	suppress_min([_,S], Pf, New_Pf),
-	suppress([S,_,_,_], Pu, New_Pu).
+	belongs([S,[Fconnu,_,_],_,_], Pu),
+	Fconnu > Fs,
+	% remplacement du terme
+	suppress([_,S], Pf, Temp_Pf),
+	suppress([S,_,_,_], Pu, Temp_Pu),
+	insert([S,[Fs,_,_],U,New_A], Pu, New_Pu),
+	insert([[Fs,_,_], U], Pf, New_Pf),
+	New_A is A+1.
 
 loop_successors(S, Q, Pf, Pu, New_Pf, New_Pu, U, Cout, A, New_Q) :-
 	% sinon (S est une situation nouvelle) il faut créer un nouveau terme à insérer dans Pu
