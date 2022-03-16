@@ -90,7 +90,7 @@ diagonale(D, M) :-
 	% deuxieme definition A COMPLETER
 
 diagonale(D, M) :-
-	lenght(M,L), 
+	length(M,L), 
 	seconde_diag(L,D,M).
 
 	
@@ -123,7 +123,9 @@ possible(  [],  _).
 
 % A FAIRE 
 
-unifiable(X,J) :-
+unifiable(X,J) :- Var(X).
+unifiable(X,J) :- X = J.
+	
 
 	
 	/**********************************
