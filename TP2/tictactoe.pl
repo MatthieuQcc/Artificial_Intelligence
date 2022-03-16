@@ -73,7 +73,7 @@ colonne(C,M) :-
 		il y en a 2 sortes de diagonales dans une matrice carree(https://fr.wikipedia.org/wiki/Diagonale) :
 		- la premiere diagonale (principale)  : (A I)
 		- la seconde diagonale                : (Z R)
-		A . . . . . . . Z
+		è . . . . . . . Z
 		. \ . . . . . / .
 		. . \ . . . / . .
 		. . . \ . / . . .
@@ -87,10 +87,8 @@ colonne(C,M) :-
 diagonale(D, M) :- 
 	premiere_diag(1,D,M).
 
-	% deuxieme definition A COMPLETER
-
 diagonale(D, M) :-
-	lenght(M,L), 
+	length(M,L), 
 	seconde_diag(L,D,M).
 
 	
@@ -123,7 +121,9 @@ possible(  [],  _).
 
 % A FAIRE 
 
-unifiable(X,J) :-
+unifiable(X,J) :- Var(X).
+unifiable(X,J) :- X = J.
+	
 
 	
 	/**********************************
@@ -173,8 +173,8 @@ alignement_perdant(Ali, J) :-
 	lorsqu'un joueur J joue en coordonnees [L,C]
 	*/	
 
-% A FAIRE
-% successeur(J, Etat,[L,C]) :- ? ? ? ?  
+	
+%successeur(J, Etat,[L,C]) :- 
 
 	/**************************************
    	 EVALUATION HEURISTIQUE D'UNE SITUATION
