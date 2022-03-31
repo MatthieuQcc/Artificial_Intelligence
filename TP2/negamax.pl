@@ -58,21 +58,23 @@ A FAIRE : ECRIRE ici les clauses de negamax/5
 	*/
 
 /* cas n°1 */
-negamax(J, Etat, P, P, [nill, H]) :-
-	heuristique(J,Etat,H).
+negamax(J, Etat, Pmax, Pmax, [nil, Val]) :-
+	heuristique(J,Etat,Val).
 
 /* cas n°2 */
-negamax(J, Etat, _, _, [nill, H]) :-
+negamax(J, Etat, P, Pmax, [nil, Val]) :-
+	P \= Pmax,
 	situation_terminale(J, Etat),
-	heuristique(J,Etat,H).
+	heuristique(J,Etat,Val).
 
 /* cas n°3 */
 negamax(J, Etat, P, Pmax, [Coup, V2]) :-
-	P < Pmax,
+	P \= Pmax,
+	not(situation_terminale(J, Etat)),
 	successeurs(J, Etat, Succ),
 	loop_negamax(J, P, Pmax, Succ, L),
 	meilleur(L, [Coup, V1]),
-	V2 is 0 - V1.
+	V2 is -V1.
 
 	/*******************************************
 	 DEVELOPPEMENT D'UNE SITUATION NON TERMINALE
@@ -135,27 +137,28 @@ A FAIRE : commenter chaque litteral de la 2eme clause de loop_negamax/5,
 A FAIRE : ECRIRE ici les clauses de meilleur/2
 	*/
 
-meilleur(L, [L]).
+meilleur([L], L).
 
-meilleur([[CX,VX]|L],Meilleur_Coup) :-
+meilleur([[CX,VX]|L],MCoup) :-
 	L \= [], 
 	meilleur(L,[_,VY]),
-	VX < VY,
-	Meilleur_Coup :- [CX,VX].
+	VX =< VY,
+	MCoup = [CX,VX].
 
-meilleur([[CX,VX]|L],Meilleur_Coup) :-
+meilleur([[_,VX]|L],MCoup) :-
 	L \= [], 
-	meilleur(L,[_,VY]),
-	VX >= VY,
-	Meilleur_Coup :- [CY,VY].
+	meilleur(L,[CY,VY]),
+	VX > VY,
+	MCoup = [CY,VY].
 
 	/******************
   	PROGRAMME PRINCIPAL
   	*******************/
 
 main(B,V, Pmax) :-
-
-	true.        
+	situation_initiale(S),
+	joueur_initial(J),
+	negamax(J,S,1,Pmax, [B,V]).
 
 
 	/*

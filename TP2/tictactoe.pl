@@ -121,8 +121,12 @@ possible(  [],  _).
 
 % A FAIRE 
 
-unifiable(X,J) :- Var(X).
-unifiable(X,J) :- X = J.
+unifiable(X,_J) :- 
+	var(X).
+
+unifiable(X,J) :- 
+	ground(X),
+	X = J.
 	
 
 	
@@ -158,9 +162,8 @@ alignement_gagnant(Ali, J) :-
 	possible(Ali,J).
 
 alignement_perdant(Ali, J) :-
-	ground(Ali),
 	adversaire(J,K),
-	possible(Ali,K).
+	alignement_gagnant(Ali,K).
 
 
 	/* ****************************
@@ -173,8 +176,9 @@ alignement_perdant(Ali, J) :-
 	lorsqu'un joueur J joue en coordonnees [L,C]
 	*/	
 
-	
-%successeur(J, Etat,[L,C]) :- 
+successeur(J, Etat,[L,C]) :- 
+	nth1(L, Etat, L2),
+	nth1(C,L2,J).
 
 	/**************************************
    	 EVALUATION HEURISTIQUE D'UNE SITUATION
@@ -207,13 +211,12 @@ heuristique(J,Situation,H) :-		% cas 2
 % A FAIRE 					cas 3
 
 heuristique(J,Situation,H) :-
-	findall(Ali,(alignement(Ali,Situation),possible(Ali,J)),Mat_1)),
 	adversaire(J,K),
-	findall(Ali,(alignement(Ali,Situation),possible(Ali,K)),Mat_2)),
-	L1 is length(Mat_1),
-	L2 is length(Mat_2),
-	H is (L1-L2).
-
+	findall(Ali,(alignement(Ali,Situation),possible(Ali,J)),Mat_1),
+	findall(Ali,(alignement(Ali,Situation),possible(Ali,K)),Mat_2),
+	length(Mat_1,L1),
+	length(Mat_2,L2),
+	H is L1-L2.
 
 
 
