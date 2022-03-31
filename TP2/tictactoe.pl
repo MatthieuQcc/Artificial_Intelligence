@@ -205,6 +205,15 @@ heuristique(J,Situation,H) :-		% cas 2
 % c-a-d si Situation n'est ni perdante ni gagnante.
 
 % A FAIRE 					cas 3
-% heuristique(J,Situation,H) :- ? ? ? ?
+
+heuristique(J,Situation,H) :-
+	findall(Ali,(alignement(Ali,Situation),possible(Ali,J)),Mat_1)),
+	adversaire(J,K),
+	findall(Ali,(alignement(Ali,Situation),possible(Ali,K)),Mat_2)),
+	L1 is length(Mat_1),
+	L2 is length(Mat_2),
+	H is (L1-L2).
+
+
 
 

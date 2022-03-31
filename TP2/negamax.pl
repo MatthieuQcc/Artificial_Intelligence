@@ -57,6 +57,22 @@ A FAIRE : ECRIRE ici les clauses de negamax/5
 .....................................
 	*/
 
+/* cas nÂ°1 */
+negamax(J, Etat, P, P, [nill, H]) :-
+	heuristique(J,Etat,H).
+
+/* cas nÂ°2 */
+negamax(J, Etat, _, _, [nill, H]) :-
+	situation_terminale(J, Etat),
+	heuristique(J,Etat,H).
+
+/* cas nÂ°3 */
+negamax(J, Etat, P, Pmax, [Coup, V2]) :-
+	P < Pmax,
+	successeurs(J, Etat, Succ),
+	loop_negamax(J, P, Pmax, Succ, L),
+	meilleur(L, [Coup, V1]),
+	V2 is 0 - V1.
 
 	/*******************************************
 	 DEVELOPPEMENT D'UNE SITUATION NON TERMINALE
@@ -119,7 +135,19 @@ A FAIRE : commenter chaque litteral de la 2eme clause de loop_negamax/5,
 A FAIRE : ECRIRE ici les clauses de meilleur/2
 	*/
 
+meilleur(L, [L]).
 
+meilleur([[CX,VX]|L],Meilleur_Coup) :-
+	L \= [], 
+	meilleur(L,[_,VY]),
+	VX < VY,
+	Meilleur_Coup :- [CX,VX].
+
+meilleur([[CX,VX]|L],Meilleur_Coup) :-
+	L \= [], 
+	meilleur(L,[_,VY]),
+	VX >= VY,
+	Meilleur_Coup :- [CY,VY].
 
 	/******************
   	PROGRAMME PRINCIPAL
@@ -132,8 +160,8 @@ main(B,V, Pmax) :-
 
 	/*
 A FAIRE :
-	Compléter puis tester le programme principal pour plusieurs valeurs de la profondeur maximale.
+	Complï¿½ter puis tester le programme principal pour plusieurs valeurs de la profondeur maximale.
 	Pmax = 1, 2, 3, 4 ...
-	Commentez les résultats obtenus.
+	Commentez les rï¿½sultats obtenus.
 	*/
 
