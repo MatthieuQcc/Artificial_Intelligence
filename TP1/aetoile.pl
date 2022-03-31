@@ -60,38 +60,43 @@ main :-
 	empty(Q),
 
 	%Insertion des differents noeuds
-	insert([[F0, H0, G0], S0], Pf),
-	insert([S0, [F0, H0, G0], nil, nil], Pu),
-	
-	% lancement de Aetoile
+	insert([[F0, H0, G0], S0], Pf, New_Pf),
+	insert([S0, [F0, H0, G0], nil, nil], Pu, New_Pu),
 
-	aetoile(Pf,Pu,Q).
+	% lancement de Aetoile
+	aetoile(New_Pf,New_Pu,Q).
 
 %*******************************************************************************
 
 aetoile(nil,nil,_) :-
-	writeln('PAS de SOLUTION : L’ETAT FINAL N’EST PAS ATTEIGNABLE !').
+	writeln('PAS de SOLUTION : L’ETAT FINAL N’EST PAS ATTEIGNABLE !'),!.
 
-aetoile(Pf, Pu, Qs) :-
+aetoile(Pf, _, Q) :-
 	final_state(Fin),
-	suppress_min(Fin,Pf,_),
-	insert([Fin, _, nil, nil],Qs,Qn),
-	affiche_solution(Pu,Qn).
+	suppress_min([_, Fin],Pf,_),
+	insert([Fin, _, nil, nil],Q,Qn),
+	affiche_solution(Fin,Qn),!.
 
-aetoile(Pf, Pu, Qs) :-
+aetoile(Pf, Pu, Q) :-
+	nl,print('New aetoile'),nl,
+	print('Pf = '),put_flat(Pf),nl,
+	print('Pu = '),put_flat(Pu),nl,
+	print('Q = '),put_flat(Q),nl,
 	% on enlève le nœud de Pf correspondant à l’état U à développer 
-	suppress_min([[F,H,G], U],Pf,NewPf),
+	suppress_min([[_,_,G], U],Pf,Pf2),
 	%on enlève aussi le nœud frère associé dans Pu
-	suppress_min([U,[F,H,G],Pere, A],Pu,NewPu),
+	suppress([U,Cout_U,Pere,A_U],Pu,Pu2),
+	print('U = '),print(U),
+	insert([U,Cout_U,Pere,A_U], Q, New_Q),
 	%développement de U
-	expand(S, U, [Fs,Hs,Gs], G),
+	expand(S, U, Cout_S, G, A_S),
 	% traiter chaque nœud successeur
-
-
+	print('loop_successor('),print(S),print(') : '),
+	loop_successors(S, Q, Pf2, Pu2, New_Pf, New_Pu, U, Cout_S, A_S),
 	% U ayant été développé et supprimé de P, il reste à l’insérer le nœud [U,Val,...,..] dans Q
-
+	nl,print('New_Q = '),put_flat(New_Q),nl,
 	% Appeler récursivement aetoile avec les nouveaux ensembles Pf_new, Pu_new et Q_new
-
+	aetoile(New_Pf, New_Pu, New_Q).
 
 affiche_solution(S,Q) :-
 	print('Solution trouvee! \n'),
@@ -106,38 +111,39 @@ affiche_parents(S,Q) :-
 	affiche_parents(Pere,Q).
 
 	
-expand(S, U, [Fs, Hs, Gs], Gu) :-
+expand(S, U, [Fs, Hs, Gs], Gu, A) :-
 	next_moves(U ,L),
 	% déterminer tous les nœuds contenant un état successeur S de la situation U et calculer leur évaluation [Fs, Hs, Gs]
-	list_member([_, S], L),
+	list_member([A, S], L),
 	heuristique(S, Hs),
 	Gs is Gu + 1,
-	Fs is Gs + Hs.
+	Fs is Gs + Hs,
+	nl,print('expand : '),print(S),nl.
 
 
-loop_successors(S, Q, Pf, Pu, New_Pf, New_Pu, U, Cout, A, New_Q) :-
+loop_successors(S, Q, Pf, Pu, New_Pf, New_Pu, _, _, _, _) :-
 	% si S est connu dans Q alors oublier cet état
 	belongs([S,_,_,_], Q),
 	suppress([_,S], Pf, New_Pf),
-	suppress([S,_,_,_], Pu, New_Pu).
+	suppress([S,_,_,_], Pu, New_Pu),
+	print('S belongs to Q'),nl,!.
 
-loop_successors(S, Q, Pf, Pu, New_Pf, New_Pu, U, [Fs,_,_], A, New_Q) :-
-	% si S est connu dans Pu alors garder le terme associé à la meilleure évaluation 
+loop_successors(S, _, Pf, Pu, New_Pf, New_Pu, U, [Fs,_,_], A) :-
+	% si S est connu dans Pu alors garder le terme associé à la meilleure évaluation
 	belongs([S,[Fconnu,_,_],_,_], Pu),
 	Fconnu > Fs,
 	% remplacement du terme
 	suppress([_,S], Pf, Temp_Pf),
 	suppress([S,_,_,_], Pu, Temp_Pu),
-	insert([S,[Fs,_,_],U,New_A], Pu, New_Pu),
-	insert([[Fs,_,_], U], Pf, New_Pf),
-	New_A is A+1.
+	insert([S,[Fs,_,_],U,A], Temp_Pu, New_Pu),
+	insert([[Fs,_,_], U], Temp_Pf, New_Pf),
+	print('S belongs to Pu'),nl,!.
 
-loop_successors(S, Q, Pf, Pu, New_Pf, New_Pu, U, Cout, A, New_Q) :-
+loop_successors(S, _, Pf, Pu, New_Pf, New_Pu, U, Cout, A) :-
 	% sinon (S est une situation nouvelle) il faut créer un nouveau terme à insérer dans Pu
-	insert([S,Cout,U,New_A], Pu, New_Pu),
-	insert([Cout, U], Pf, New_Pf),
-	insert([S,Cout,U,New_A], Q, New_Q),
-	New_A is A+1.
+	insert([S,Cout,U,A], Pu, New_Pu),
+	insert([Cout, S], Pf, New_Pf),
+	print('insert S to Pu/Pf'),nl.
 
 list_member(X,[X|_]).
 list_member(X,[_|TAIL]) :- list_member(X,TAIL).
